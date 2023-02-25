@@ -8,6 +8,53 @@ import {
   MinLength,
   MaxLength,
 } from 'class-validator';
+import { Expose } from 'class-transformer';
+
+export class UserDto {
+  @Expose()
+  id: string;
+
+  @Expose()
+  @IsString()
+  @IsOptional()
+  firstName: string;
+
+  @Expose()
+  @IsString()
+  @IsOptional()
+  lastName: string;
+
+  @Expose()
+  @IsEmail()
+  email: string;
+
+  @Expose()
+  @IsOptional()
+  @IsPhoneNumber('NG')
+  @MaxLength(11, {
+    message: 'phone number should not exceed 11 characters.',
+  })
+  @MinLength(11, {
+    message: 'phone number should not be less than 11 characters.',
+  })
+  @Matches(
+    /((^234)[0-9]{10})|((^0)(7|8|9){1}(0|1){1}[0-9]{8})|((^234)[0-9]{10})/,
+    {
+      message: 'phone number should be of the format 08112345678',
+    },
+  )
+  phoneNumber: string;
+
+  @Expose()
+  @IsString()
+  @IsOptional()
+  username: string;
+
+  @Expose()
+  @IsString()
+  @IsOptional()
+  accountNumber: string;
+}
 
 export class CreateUserDto {
   @IsEmail()

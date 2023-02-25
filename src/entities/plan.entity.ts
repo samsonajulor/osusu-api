@@ -4,8 +4,16 @@ import {
   PrimaryGeneratedColumn,
   ManyToMany,
   JoinTable,
+  AfterInsert,
+  AfterRemove,
+  AfterUpdate,
+  CreateDateColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 import { User } from './user.entity';
+import { winstonLogger, initWinston } from 'src/common/utilities';
+
+initWinston('Plan Entity', 'calling the initWinston function...');
 
 enum FrequencyOfSavings {
   DAILY = 'daily',
@@ -54,4 +62,25 @@ export class Plan {
   @ManyToMany(() => User)
   @JoinTable()
   buddies: User[];
+
+  @AfterInsert()
+  logInsert() {
+    winstonLogger.info('PLAN Entity', `PLAN with id ${this.id} created`);
+  }
+
+  @AfterUpdate()
+  logUpdate() {
+    winstonLogger.info('PLAN Entity', `PLAN with id ${this.id} updated`);
+  }
+
+  @AfterRemove()
+  logRemove() {
+    winstonLogger.info('PLAN Entity', `PLAN with id ${this.id} removed`);
+  }
+
+  @CreateDateColumn({ name: 'created_at' })
+  createdAt: Date;
+
+  @UpdateDateColumn({ name: 'updated_at' })
+  updatedAt: Date;
 }

@@ -4,6 +4,6 @@ import { OtpController } from './otp.controller';
 
 @Module({
   providers: [OtpService],
-  controllers: [OtpController]
+  controllers: [OtpController],
 })
 export class OtpModule {}

@@ -1,10 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { User } from '../entities/user.entity';
-import { OtpService } from './otp.service';
-import { CreateUserDto } from './dto/create-user.dto';
-import { OtpDto } from './dto/otp.dto';
+import { OtpService } from '../otp/otp.service';
+import { UserService } from '../user/user.service';
+import { CreateUserDto, UserDto } from '../common/dtos';
 
 @Injectable()
 export class AuthService {
@@ -16,8 +13,7 @@ export class AuthService {
    * @memberof AuthService
    */
   constructor(
-    @InjectRepository(User)
-    private readonly userRepository: Repository<User>,
+    private readonly userService: UserService,
     private readonly otpService: OtpService,
   ) {}
 
@@ -26,15 +22,15 @@ export class AuthService {
    * which is sent to the user's email for verification.
    *
    * @param {CreateUserDto} createUserDto - The DTO object containing the user's email and other details.
-   * @returns {Promise<OtpDto>} The generated OTP code.
+   * @returns {Promise<UserDto>} The registered user.
    * @throws {Error} If the user already exists in the database.
    * @memberof AuthService
    */
-  async register(createUserDto: CreateUserDto): Promise<OtpDto> {
+  async register(createUserDto: CreateUserDto): Promise<UserDto> {
     // Check if email already exists
-    const existingUser = await this.userRepository.findOne({
-      email: createUserDto.email,
-    });
+    const existingUser = await this.userService.findByEmail(
+      createUserDto.email as string,
+    );
     if (existingUser) {
       throw new HttpException(
         'User with this email already exists',
@@ -43,8 +39,7 @@ export class AuthService {
     }
 
     // Create new user
-    const user = this.userRepository.create(createUserDto);
-    await this.userRepository.save(user);
+    const user = this.userService.register(createUserDto);
 
     // Generate OTP
     const otp = await this.otpService.generateOtp(user.email);
