@@ -3,7 +3,7 @@ import { Transform, Expose } from 'class-transformer';
 
 export class OTPDto {
   @Expose()
-  id: string;
+  id: number;
 
   @Expose()
   email: string;
@@ -13,6 +13,12 @@ export class OTPDto {
 
   @Expose()
   status: string;
+
+  @Expose()
+  createdAt: Date;
+
+  @Expose()
+  updatedAt: Date;
 }
 
 export class CreateOtpDto {

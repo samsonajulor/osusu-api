@@ -1,17 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { OTP, User } from '../entities';
+import { OTP } from '../entities';
 import { OTPDto } from '../common/dtos';
 import { randomBytes } from 'crypto';
+import { UserService } from '../user/user.service';
 
 @Injectable()
 export class GenerateOtpService {
   constructor(
     @InjectRepository(OTP)
     private readonly otpRepository: Repository<OTP>,
-    @InjectRepository(User)
-    private readonly userRepository: Repository<User>,
+    private readonly userService: UserService,
   ) {}
 
   /**
@@ -20,7 +20,7 @@ export class GenerateOtpService {
    * @returns The newly generated OTP.
    */
   async generateOtp(email: string): Promise<OTPDto> {
-    const user = await this.userRepository.findOne({ email });
+    const user = await this.userService.findByEmail(email);
 
     if (!user) {
       throw new Error('User not found');
@@ -28,9 +28,10 @@ export class GenerateOtpService {
 
     // Generate a new 6-digit OTP
     const otpCode = randomBytes(3).toString('hex');
-    const otp = new OTP();
-    otp.email = user.email;
-    otp.code = otpCode;
+    const otp = this.otpRepository.create({
+      code: otpCode,
+      email: user.email,
+    });
 
     // Save the OTP to the database
     const savedOtp = await this.otpRepository.save(otp);
@@ -39,7 +40,7 @@ export class GenerateOtpService {
       id: savedOtp.id,
       code: savedOtp.code,
       status: savedOtp.status,
-      userId: savedOtp.user.id,
+      email: savedOtp.email,
       createdAt: savedOtp.createdAt,
       updatedAt: savedOtp.updatedAt,
     };
