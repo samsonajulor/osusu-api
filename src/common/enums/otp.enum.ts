@@ -1,5 +1,5 @@
 export enum OtpStatus {
-  IDLE = 'IDLE',
-  USED = 'USED',
-  EXPIRED = 'EXPIRED',
+  IDLE = 'idle',
+  USED = 'used',
+  EXPIRED = 'expired',
 }
