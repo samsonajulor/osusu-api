@@ -7,6 +7,9 @@ import { AllExceptionsFilter } from '../common/utilities/all-exceptions.filter';
 /** Modules */
 import { AppController } from './app.controller';
 import { AuthModule } from 'src/auth/auth.module';
+import { UserModule } from '../user/user.module';
+import { OtpModule } from '../otp/otp.module';
+import { PlanModule } from '../plan/plan.module';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const cookieSession = require('cookie-session');
@@ -20,6 +23,9 @@ const cookieSession = require('cookie-session');
     }),
     TypeOrmModule.forRoot(),
     AuthModule,
+    UserModule,
+    OtpModule,
+    PlanModule,
   ],
   providers: [
     {
