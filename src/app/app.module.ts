@@ -6,6 +6,7 @@ import { AllExceptionsFilter } from '../common/utilities/all-exceptions.filter';
 
 /** Modules */
 import { AppController } from './app.controller';
+import { AuthModule } from 'src/auth/auth.module';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const cookieSession = require('cookie-session');
@@ -18,6 +19,7 @@ const cookieSession = require('cookie-session');
       envFilePath: '.env',
     }),
     TypeOrmModule.forRoot(),
+    AuthModule,
   ],
   providers: [
     {
