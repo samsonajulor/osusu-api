@@ -7,7 +7,7 @@ import {
   IsArray,
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import { Duration, FrequencyOfSavings, PlanStatus } from '../enums/plan.enum';
+import { Duration, FrequencyOfSavings, PlanStatus } from '../enums';
 import { User } from '../../entities/user.entity';
 
 export class CreatePlanDto {
