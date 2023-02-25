@@ -1,3 +1,6 @@
+import { FrequencyOfSavings, Duration } from '../enums';
+import { User } from './user.interface';
+
 export interface Plan {
   id: number;
   title: string;

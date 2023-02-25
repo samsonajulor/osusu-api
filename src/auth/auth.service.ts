@@ -26,8 +26,7 @@ export class AuthService {
    * @throws {Error} If the user already exists in the database.
    * @memberof AuthService
    */
-  async register(createUserDto: CreateUserDto): Promise<UserDto> {
-    // Check if email already exists
+  async register(createUserDto: CreateUserDto): Promise<string> {
     const existingUser = await this.userService.findByEmail(
       createUserDto.email as string,
     );
@@ -39,12 +38,12 @@ export class AuthService {
     }
 
     // Create new user
-    const user = this.userService.register(createUserDto);
+    const user = await this.userService.create(createUserDto);
 
     // Generate OTP
     const otp = await this.otpService.generateOtp(user.email);
 
     // Return OTP
-    return otp;
+    return 'user created please check your mail.';
   }
 }

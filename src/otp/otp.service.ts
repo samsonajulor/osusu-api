@@ -7,7 +7,7 @@ import { randomBytes } from 'crypto';
 import { UserService } from '../user/user.service';
 
 @Injectable()
-export class GenerateOtpService {
+export class OtpService {
   constructor(
     @InjectRepository(OTP)
     private readonly otpRepository: Repository<OTP>,

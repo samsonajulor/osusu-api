@@ -12,7 +12,7 @@ import { Expose } from 'class-transformer';
 
 export class UserDto {
   @Expose()
-  id: string;
+  id: number;
 
   @Expose()
   @IsString()

@@ -1,10 +1,11 @@
-import { Injectable, HttpException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { CreateUserDto } from 'src/common/dtos';
 import { Repository } from 'typeorm';
 import { User } from '../entities';
 
 @Injectable()
-export class EmailService {
+export class UserService {
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
@@ -39,5 +40,16 @@ export class EmailService {
         email,
       },
     });
+  }
+
+  /**
+   * Creates a new user in the database.
+   * @param createUserDto The DTO object containing the user's email and other details.
+   * @returns A promise that resolves to the newly created user.
+   */
+  async create(createUserDto: CreateUserDto): Promise<User> {
+    const user = this.userRepository.create(createUserDto);
+
+    return this.userRepository.save(user);
   }
 }
