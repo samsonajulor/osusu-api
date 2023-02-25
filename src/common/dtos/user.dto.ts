@@ -12,7 +12,9 @@ import {
 export class CreateUserDto {
   @IsEmail()
   readonly email: string;
+}
 
+export class UpdateUserDto {
   @IsOptional()
   @IsString()
   readonly username?: string;
@@ -36,24 +38,6 @@ export class CreateUserDto {
   @IsString()
   @Length(8, 20)
   readonly password: string;
-
-  @IsOptional()
-  @IsString()
-  readonly firstName?: string;
-
-  @IsOptional()
-  @IsString()
-  readonly lastName?: string;
-}
-
-export class UpdateUserDto {
-  @IsOptional()
-  @IsString()
-  readonly username?: string;
-
-  @IsOptional()
-  @IsPhoneNumber('NG')
-  readonly phoneNumber?: string;
 
   @IsOptional()
   @IsString()
