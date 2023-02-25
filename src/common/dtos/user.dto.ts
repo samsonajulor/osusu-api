@@ -4,6 +4,9 @@ import {
   IsPhoneNumber,
   IsString,
   Length,
+  Matches,
+  MinLength,
+  MaxLength,
 } from 'class-validator';
 
 export class CreateUserDto {
@@ -16,6 +19,18 @@ export class CreateUserDto {
 
   @IsOptional()
   @IsPhoneNumber('NG')
+  @MaxLength(11, {
+    message: 'phone number should not exceed 11 characters.',
+  })
+  @MinLength(11, {
+    message: 'phone number should not be less than 11 characters.',
+  })
+  @Matches(
+    /((^234)[0-9]{10})|((^0)(7|8|9){1}(0|1){1}[0-9]{8})|((^234)[0-9]{10})/,
+    {
+      message: 'phone number should be of the format 08112345678',
+    },
+  )
   readonly phoneNumber?: string;
 
   @IsString()
