@@ -38,10 +38,13 @@ export class User {
   @Column({ nullable: true })
   lastName: string;
 
-  @Column({ unique: true })
+  @Column({ unique: true, nullable: true })
   accountNumber: string;
 
-  @ManyToMany(() => Plan)
+  @ManyToMany(() => Plan, (plan) => plan.buddies, {
+    cascade: true,
+    eager: true,
+  })
   @JoinTable()
   plans: Plan[];
 
