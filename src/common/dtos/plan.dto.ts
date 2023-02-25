@@ -7,7 +7,8 @@ import {
   IsArray,
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import { FrequencyOfSavings, PlanStatus } from '../enums/plan.enum';
+import { Duration, FrequencyOfSavings, PlanStatus } from '../enums/plan.enum';
+import { User } from '../../entities/user.entity';
 
 export class CreatePlanDto {
   @IsNotEmpty()
@@ -15,7 +16,7 @@ export class CreatePlanDto {
 
   @IsOptional()
   @IsArray()
-  buddies: string[];
+  buddies: User[];
 
   @IsNotEmpty()
   @IsBoolean()
@@ -31,7 +32,7 @@ export class CreatePlanDto {
 
   @IsNotEmpty()
   @IsDateString()
-  startDate: string;
+  startDate: Date;
 
   @IsOptional()
   @Type(() => Date)
@@ -52,7 +53,7 @@ export class UpdatePlanDto {
 
   @IsOptional()
   @IsArray()
-  buddies: string[];
+  buddies: number[];
 
   @IsOptional()
   @IsBoolean()
@@ -75,8 +76,8 @@ export class UpdatePlanDto {
   endDate: Date;
 
   @IsOptional()
-  @IsDateString()
-  duration: string;
+  @IsEnum(Duration)
+  duration: Duration;
 
   @IsOptional()
   @IsNotEmpty()
