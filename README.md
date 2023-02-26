@@ -52,7 +52,10 @@ This is a NestJS application with TypeScript, Yarn, Postgres, and TypeORM. The a
 This METHOD allows a user to register by providing their email address. Upon registration, an OTP code is generated and sent to the user's email address for verification.
 
 **Login METHOD:**
-This METHOD allows a registered user to login using their email and password. Upon successful login, a JSON Web Token (JWT) is generated and returned to the client for authentication in subsequent requests.
+This METHOD allows a registered user to login using their email and password. Upon successful login, the system keeps track of the session.
+
+**Create Password METHOD:**
+This METHOD allows a user to create a password during the registration flow.
 
 **Forgot Password METHOD:**
 This METHOD allows a user to reset their password if they have forgotten it. The user is able to enter their email address, and an OTP code is generated and sent to their email. If the code is valid, the user is able to set a new password.
