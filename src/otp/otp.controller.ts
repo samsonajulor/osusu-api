@@ -30,4 +30,10 @@ export class OtpController {
   async handleExpireOTPCron() {
     await this.otpService.expireOtps();
   }
+
+  @Post('/resend')
+  @HttpCode(HttpStatus.OK)
+  async resendOtp(@Body() body: VerifyOtpDto) {
+    return this.otpService.resendOtp(body.email);
+  }
 }

@@ -82,16 +82,7 @@ export class OtpService {
     });
 
     // Save the OTP to the database
-    const savedOtp = await this.otpRepository.save(otp);
-
-    return {
-      id: savedOtp.id,
-      code: savedOtp.code,
-      status: savedOtp.status,
-      email: savedOtp.email,
-      createdAt: savedOtp.createdAt,
-      updatedAt: savedOtp.updatedAt,
-    };
+    return this.otpRepository.save(otp);
   }
 
   /**
@@ -162,5 +153,31 @@ export class OtpService {
       },
     });
     return expiredOtps;
+  }
+
+  /**
+   * Resend otp
+   * @param email The email address of the user to generate an OTP for.
+   * @returns The newly generated OTP.
+   */
+  async resendOtp(email: string): Promise<OTPDto> {
+    const user = await this.userService.findByEmail(email);
+
+    if (!user) {
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    }
+
+    const otp = await this.otpRepository.findOne({
+      where: {
+        email: user.email,
+        status: OtpStatus.IDLE,
+      },
+    });
+
+    if (!otp) {
+      throw new HttpException('OTP not found', HttpStatus.NOT_FOUND);
+    }
+
+    return this.generateOtp(user.email);
   }
 }
