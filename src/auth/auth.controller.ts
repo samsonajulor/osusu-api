@@ -11,23 +11,19 @@ import {
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { UserService } from '../user/user.service';
-import { MailService } from 'src/email/email.service';
-import { OtpService } from 'src/otp/otp.service';
-import { CreateUserDto, UserDto } from 'src/common/dtos';
+import { CreateUserDto, UserDto, CreatePasswordDto } from 'src/common/dtos';
 import { Serialize, SerializeResponse } from 'src/common/interceptors';
 import { GetCurrentUser } from './decorators';
 import { User } from 'src/entities';
 import { AuthGuard } from 'src/common/guards';
-import { LoginUserDto } from '../common/dtos/user.dto';
+import { LoginUserDto, ResetPasswordDto } from '../common/dtos/user.dto';
 
 @SerializeResponse()
-@Serialize(UserDto)
 @Controller('auth')
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly userService: UserService,
-    private readonly emailService: MailService,
   ) {}
 
   @Post('/register')
@@ -44,7 +40,7 @@ export class AuthController {
 
     const otp = await this.authService.register(body);
 
-    await this.sendEmail(
+    await this.authService.sendEmail(
       body.email,
       'Welcome',
       `Welcome to the app. Your OTP is ${otp.code}`,
@@ -54,6 +50,7 @@ export class AuthController {
   }
 
   @Post('/login')
+  @Serialize(UserDto)
   async login(@Body() body: LoginUserDto, @Session() session: any) {
     const { email, password } = body;
     const user = await this.authService.login(email, password);
@@ -64,15 +61,20 @@ export class AuthController {
   }
 
   @Post('/create-password')
-  async changePassword(
-    @Body('email') email: string,
-    @Body('password') password: string,
-    @Body('confirmPassword') confirmPassword: string,
-  ) {
+  async createPassword(@Body() body: CreatePasswordDto) {
+    const { email, password, confirmPassword } = body;
+
     const user = await this.userService.findByEmail(email);
 
     if (!user) {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    }
+
+    if (user.password) {
+      throw new HttpException(
+        'User already has a password. Please login.',
+        HttpStatus.BAD_REQUEST,
+      );
     }
 
     if (password !== confirmPassword) {
@@ -88,15 +90,15 @@ export class AuthController {
     return 'password changed';
   }
 
-  /**
-   * Sends an email to the user with the given email address.
-   * @param email The email address of the user to send the email to.
-   * @param subject The subject of the email.
-   * @param content The content of the email.
-   * @returns A promise that resolves when the email has been sent.
-   * @throws {Error} If the email could not be sent.
-   */
-  async sendEmail(email: string, subject: string, content: string) {
-    await this.emailService.sendEmail(email, subject, content);
+  @Post('/spo')
+  async sendResetPasswordOtp(@Body('email') email: string) {
+    return await this.authService.sendResetPasswordOtp(email);
+  }
+
+  @Post('/reset-password')
+  async resetPassword(@Body() body: ResetPasswordDto) {
+    await this.authService.resetPassword(body.email, body.otp);
+
+    return 'password reset successful. Please create a new one';
   }
 }

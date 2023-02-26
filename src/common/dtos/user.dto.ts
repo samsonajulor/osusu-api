@@ -118,3 +118,25 @@ export class ForgotPasswordDto {
   @IsEmail()
   readonly email: string;
 }
+
+export class CreatePasswordDto {
+  @IsEmail()
+  readonly email: string;
+
+  @IsString()
+  @Length(8, 20)
+  readonly password: string;
+
+  @IsString()
+  @Length(8, 20)
+  readonly confirmPassword: string;
+}
+
+export class ResetPasswordDto {
+  @IsString()
+  @Length(6, 6)
+  readonly otp: string;
+
+  @IsEmail()
+  readonly email: string;
+}
