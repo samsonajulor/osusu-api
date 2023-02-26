@@ -57,8 +57,11 @@ This METHOD allows a registered user to login using their email and password. Up
 **Create Password METHOD:**
 This METHOD allows a user to create a password during the registration flow.
 
+**Send Reset Password OTP**
+This METHOD sends an otp to a registered user which can be used to reset the password
+
 **Reset Password METHOD:**
-This METHOD allows a user to reset their password if they have forgotten it. The user is able to enter their email address, and an OTP code is generated and sent to their email. If the code is valid, the user is able to set a new password.
+This METHOD allows a user to reset their password if they have forgotten it. The user is able to enter their email address, and an OTP code sent from the send reset password otp. If the code is valid, this methods removes the previous password and the user can now create a new password.
 
 **Change Password METHOD:**
 This METHOD allows a logged-in user to change their password. The user is able to enter their current password and the new password they want to set.
@@ -79,3 +82,24 @@ This METHOD will be responsible for expiring an OTP that has not been used withi
 
 **Resend OTP METHOD:**
 This METHOD will be responsible for resending an OTP to the user in case they did not receive it or need to generate a new one.
+
+## PLAN SERVICE
+
+**Create Plan METHOD:**
+This METHOD handles the creation of a new plan. The creator is automatically a subscriber to the plan.
+
+**Update Plan METHOD:**
+This METHOD handles the update of an existing plan.
+
+**Get Plan METHOD:**
+This METHOD handles the retrieval of a single plan by its ID.
+
+**Get All Plans METHOD:** This METHOD handles the retrieval of all available plans that a user is a subscriber to.
+
+**Delete Plan METHOD:** This METHOD handles the deletion of a plan by its ID.
+
+**Subscribe To Plan METHOD:** This METHOD handles the subscription of at most 5 registered users to a plan. A notification mail is sent when a new subscriber is added. Inviting the user to either join or decline an invitation
+
+**GetSubscribed Plans METHOD:** This METHOD handles the retrieval of all plans subscribed to by a user.
+
+**Unsubscribe From Plan METHOD:** This service handles the unsubscription of a user from a plan.

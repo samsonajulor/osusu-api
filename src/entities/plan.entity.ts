@@ -59,6 +59,9 @@ export class Plan {
   })
   duration: number;
 
+  @Column()
+  isSubscriptionOpen: boolean;
+
   @ManyToMany(() => User, (user) => user.plans)
   @JoinTable()
   buddies: User[];
