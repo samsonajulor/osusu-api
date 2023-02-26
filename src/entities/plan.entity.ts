@@ -12,14 +12,9 @@ import {
 } from 'typeorm';
 import { User } from './user.entity';
 import { winstonLogger, initWinston } from 'src/common/utilities';
+import { PlanStatus } from 'src/common/enums';
 
 initWinston('Plan Entity', 'calling the initWinston function...');
-
-enum FrequencyOfSavings {
-  DAILY = 'daily',
-  WEEKLY = 'weekly',
-  MONTHLY = 'monthly',
-}
 
 @Entity()
 export class Plan {
@@ -61,6 +56,9 @@ export class Plan {
 
   @Column()
   isSubscriptionOpen: boolean;
+
+  @Column()
+  status: PlanStatus;
 
   @ManyToMany(() => User, (user) => user.plans)
   @JoinTable()

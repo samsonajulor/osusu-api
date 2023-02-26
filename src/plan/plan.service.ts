@@ -208,6 +208,6 @@ export class PlanService {
       );
     }
 
-    return `users with id ${userIds} removed from plan ${planId}`
+    return `users with id ${userIds} removed from plan ${planId}`;
   }
 }
