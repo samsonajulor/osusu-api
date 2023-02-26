@@ -46,15 +46,46 @@ export class AuthService {
   }
 
   /**
+   * User is able to login with email and password
+   * @param {string} email - The email address of the user.
+   * @param {string} password - The password.
+   */
+  async login(email: string, password: string): Promise<UserDto> {
+    const user = await this.userService.findByEmail(email);
+
+    if (!user) {
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    }
+
+    const isPasswordValid = await this.userService.comparePassword(
+      password,
+      user.password,
+    );
+
+    if (!isPasswordValid) {
+      throw new HttpException('Invalid password', HttpStatus.BAD_REQUEST);
+    }
+
+    return user;
+  }
+
+  /**
    * Changes the user's password.
    * @param {string} email - The email address of the user.
    * @param {string} password - The new password.
    * @returns {Promise<UserDto>} The updated user.
    */
-  async changePassword(email: string, password: string): Promise<UserDto> {
+  async createPassword(email: string, password: string): Promise<UserDto> {
     const user = await this.userService.findByEmail(email);
     if (!user) {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    }
+
+    if (user.password) {
+      throw new HttpException(
+        'Already have a password. Use forgot password to reset password',
+        HttpStatus.BAD_REQUEST,
+      );
     }
 
     // hash the password

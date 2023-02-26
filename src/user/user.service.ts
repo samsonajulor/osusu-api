@@ -172,4 +172,29 @@ export class UserService {
 
     return hashedPw;
   }
+
+  /**
+   * Compare a password with a hashed password
+   * @param password The password to compare.
+   * @param hashedPassword The hashed password to compare.
+   * @returns A promise that resolves to true if the password matches the hashed password.
+   * @memberof UserService
+   * @throws HttpException if the password does not match the hashed password.
+   * @throws HttpException if the hashed password is not in the correct format.
+   */
+  async comparePassword(
+    password: string,
+    hashedPassword: string,
+  ): Promise<boolean> {
+    // check if the password matches the hashed password
+    const [salt, storedHash] = hashedPassword.split('.');
+
+    const hash = (await scrypt(password, salt, 32)) as Buffer;
+
+    if (hash.toString('hex') !== storedHash) {
+      return false;
+    }
+
+    return true;
+  }
 }

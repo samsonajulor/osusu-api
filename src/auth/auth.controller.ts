@@ -52,15 +52,20 @@ export class AuthController {
     return 'user created please check your mail.';
   }
 
-  @Post('/change-password')
+  @Post('/create-password')
   async changePassword(
     @Body('email') email: string,
     @Body('password') password: string,
+    @Body('confirmPassword') confirmPassword: string,
   ) {
     const user = await this.userService.findByEmail(email);
 
     if (!user) {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    }
+
+    if (password !== confirmPassword) {
+      throw new HttpException('Passwords do not match', HttpStatus.BAD_REQUEST);
     }
 
     const hashedPW = await this.userService.hashPassword(password);
