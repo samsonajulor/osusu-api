@@ -16,7 +16,11 @@ import { Serialize, SerializeResponse } from 'src/common/interceptors';
 import { GetCurrentUser } from './decorators';
 import { User } from 'src/entities';
 import { AuthGuard } from 'src/common/guards';
-import { LoginUserDto, ResetPasswordDto } from '../common/dtos/user.dto';
+import {
+  ChangePasswordDto,
+  LoginUserDto,
+  ResetPasswordDto,
+} from '../common/dtos/user.dto';
 
 @SerializeResponse()
 @Controller('auth')
@@ -60,6 +64,12 @@ export class AuthController {
     return user;
   }
 
+  @Get('/me')
+  @UseGuards(AuthGuard)
+  whoAmI(@GetCurrentUser() user: User) {
+    return user;
+  }
+
   @Post('/create-password')
   async createPassword(@Body() body: CreatePasswordDto) {
     const { email, password, confirmPassword } = body;
@@ -91,6 +101,7 @@ export class AuthController {
   }
 
   @Post('/spo')
+  // spo = send password otp
   async sendResetPasswordOtp(@Body('email') email: string) {
     return await this.authService.sendResetPasswordOtp(email);
   }
@@ -100,5 +111,30 @@ export class AuthController {
     await this.authService.resetPassword(body.email, body.otp);
 
     return 'password reset successful. Please create a new one';
+  }
+
+  @Post('/change-password')
+  @UseGuards(AuthGuard)
+  async changePassword(
+    @Body() body: ChangePasswordDto,
+    @GetCurrentUser() user: User,
+    @Session() session: any,
+  ) {
+    await this.authService.changePassword(
+      user.email,
+      body.oldPassword,
+      body.newPassword,
+    );
+
+    session.userId = null;
+
+    return 'password changed successfully';
+  }
+
+  @Post('/logout')
+  @HttpCode(HttpStatus.OK)
+  async logout(@Session() session: any): Promise<boolean> {
+    session.userId = null;
+    return true;
   }
 }

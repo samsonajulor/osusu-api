@@ -140,3 +140,13 @@ export class ResetPasswordDto {
   @IsEmail()
   readonly email: string;
 }
+
+export class ChangePasswordDto {
+  @IsString()
+  @Length(8, 20)
+  readonly oldPassword: string;
+
+  @IsString()
+  @Length(8, 20)
+  readonly newPassword: string;
+}

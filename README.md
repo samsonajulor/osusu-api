@@ -57,7 +57,7 @@ This METHOD allows a registered user to login using their email and password. Up
 **Create Password METHOD:**
 This METHOD allows a user to create a password during the registration flow.
 
-**Forgot Password METHOD:**
+**Reset Password METHOD:**
 This METHOD allows a user to reset their password if they have forgotten it. The user is able to enter their email address, and an OTP code is generated and sent to their email. If the code is valid, the user is able to set a new password.
 
 **Change Password METHOD:**

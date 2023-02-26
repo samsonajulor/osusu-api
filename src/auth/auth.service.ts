@@ -166,6 +166,49 @@ export class AuthService {
   }
 
   /**
+   * Changes the user's password.
+   * @param {string} email - The email address of the user.
+   * @param {string} oldPassword - The old password.
+   * @param {string} newPassword - The new password.
+   * @returns {Promise<UserDto>} The updated user.
+   * @throws {Error} If the user does not exist in the database.
+   * @throws {Error} If the old password is invalid.
+   * @memberof AuthService
+   */
+  async changePassword(
+    email: string,
+    oldPassword: string,
+    newPassword: string,
+  ): Promise<UserDto> {
+    const user = await this.userService.findByEmail(email);
+
+    if (!user) {
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    }
+
+    if (!user.password) {
+      throw new HttpException(
+        'You have not set a password. Use create password to set a password',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    const isPasswordValid = await this.userService.comparePassword(
+      oldPassword,
+      user.password,
+    );
+
+    if (!isPasswordValid) {
+      throw new HttpException('Invalid password', HttpStatus.BAD_REQUEST);
+    }
+
+    // hash the password
+    const hashedPassword = await this.userService.hashPassword(newPassword);
+
+    return this.userService.update(user.id, { password: hashedPassword });
+  }
+
+  /**
    * Sends an email to the user with the given email address.
    * @param email The email address of the user to send the email to.
    * @param subject The subject of the email.
