@@ -168,4 +168,46 @@ export class PlanService {
 
     return `Successfully added ${newUsers.length} new users with id(s) ${newUsers} to plan ${planId}`;
   }
+
+  /**
+   * remove users from plan
+   * @param planId - The id of the Plan to remove users from
+   * @param userIds - An array of user ids to remove from the Plan
+   */
+  async removeUsersFromPlan(
+    planId: number,
+    userIds: number[],
+  ): Promise<string> {
+    const plan = await this.findById(planId);
+
+    if (!plan) {
+      throw new HttpException('Plan not found', HttpStatus.NOT_FOUND);
+    }
+
+    /** Check if new users exists in the users service */
+    const notFound = [];
+    for (const userId of userIds) {
+      const user = await this.userService.findById(userId);
+
+      if (!user) {
+        notFound.push(userId);
+      }
+      /** Check if the user is the creator */
+      if (user.email === plan.creator) {
+        throw new HttpException(
+          `User with id ${user.id} is the creator of plan ${planId}`,
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+    }
+
+    if (notFound.length > 0) {
+      throw new HttpException(
+        `Users with ids ${notFound} not found`,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    return `users with id ${userIds} removed from plan ${planId}`
+  }
 }
