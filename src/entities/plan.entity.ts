@@ -12,7 +12,7 @@ import {
 } from 'typeorm';
 import { User } from './user.entity';
 import { winstonLogger, initWinston } from 'src/common/utilities';
-import { PlanStatus } from 'src/common/enums';
+import { FrequencyOfSavings, PlanStatus } from 'src/common/enums';
 
 initWinston('Plan Entity', 'calling the initWinston function...');
 
