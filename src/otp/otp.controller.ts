@@ -9,7 +9,7 @@ import {
   Session,
   UseGuards,
 } from '@nestjs/common';
-import { VerifyOtpDto } from 'src/common/dtos';
+import { ResendOtpDto, VerifyOtpDto } from 'src/common/dtos';
 import { Cron } from '@nestjs/schedule';
 import { SerializeResponse } from '../common/interceptors';
 import { OtpService } from './otp.service';
@@ -33,7 +33,7 @@ export class OtpController {
 
   @Post('/resend')
   @HttpCode(HttpStatus.OK)
-  async resendOtp(@Body() body: VerifyOtpDto) {
+  async resendOtp(@Body() body: ResendOtpDto) {
     return this.otpService.resendOtp(body.email);
   }
 }

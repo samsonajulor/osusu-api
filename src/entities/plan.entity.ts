@@ -59,7 +59,7 @@ export class Plan {
   })
   duration: number;
 
-  @ManyToMany(() => User)
+  @ManyToMany(() => User, (user) => user.plans)
   @JoinTable()
   buddies: User[];
 

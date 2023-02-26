@@ -2,6 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { OtpService } from '../otp/otp.service';
 import { UserService } from '../user/user.service';
 import { CreateUserDto, UserDto } from '../common/dtos';
+import { OTPDto } from '../common/dtos/otp.dto';
 
 @Injectable()
 export class AuthService {
@@ -26,7 +27,7 @@ export class AuthService {
    * @throws {Error} If the user already exists in the database.
    * @memberof AuthService
    */
-  async register(createUserDto: CreateUserDto): Promise<string> {
+  async register(createUserDto: CreateUserDto): Promise<OTPDto> {
     const existingUser = await this.userService.findByEmail(
       createUserDto.email as string,
     );
@@ -41,9 +42,24 @@ export class AuthService {
     const user = await this.userService.create(createUserDto);
 
     // Generate OTP
-    const otp = await this.otpService.generateOtp(user.email);
+    return this.otpService.generateOtp(user.email);
+  }
 
-    // Return OTP
-    return 'user created please check your mail.';
+  /**
+   * Changes the user's password.
+   * @param {string} email - The email address of the user.
+   * @param {string} password - The new password.
+   * @returns {Promise<UserDto>} The updated user.
+   */
+  async changePassword(email: string, password: string): Promise<UserDto> {
+    const user = await this.userService.findByEmail(email);
+    if (!user) {
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    }
+
+    // hash the password
+    const hashedPassword = await this.userService.hashPassword(password);
+
+    return this.userService.update(user.id, { password: hashedPassword });
   }
 }

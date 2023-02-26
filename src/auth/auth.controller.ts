@@ -14,11 +14,12 @@ import { UserService } from '../user/user.service';
 import { MailService } from 'src/email/email.service';
 import { OtpService } from 'src/otp/otp.service';
 import { CreateUserDto, UserDto } from 'src/common/dtos';
-import { Serialize } from 'src/common/interceptors';
+import { Serialize, SerializeResponse } from 'src/common/interceptors';
 import { GetCurrentUser } from './decorators';
 import { User } from 'src/entities';
 import { AuthGuard } from 'src/common/guards';
 
+@SerializeResponse()
 @Serialize(UserDto)
 @Controller('auth')
 export class AuthController {
@@ -26,7 +27,6 @@ export class AuthController {
     private readonly authService: AuthService,
     private readonly userService: UserService,
     private readonly emailService: MailService,
-    private readonly otpService: OtpService,
   ) {}
 
   @Post('/register')
@@ -41,9 +41,7 @@ export class AuthController {
       );
     }
 
-    await this.authService.register(body);
-
-    const otp = await this.otpService.generateOtp(body.email);
+    const otp = await this.authService.register(body);
 
     await this.sendEmail(
       body.email,
@@ -52,6 +50,26 @@ export class AuthController {
     );
 
     return 'user created please check your mail.';
+  }
+
+  @Post('/change-password')
+  async changePassword(
+    @Body('email') email: string,
+    @Body('password') password: string,
+  ) {
+    const user = await this.userService.findByEmail(email);
+
+    if (!user) {
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    }
+
+    const hashedPW = await this.userService.hashPassword(password);
+
+    user.password = hashedPW;
+
+    await this.userService.update(user.id, user);
+
+    return 'password changed';
   }
 
   /**

@@ -1,10 +1,11 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { LessThan, Repository } from 'typeorm';
+import { In, LessThan, Repository } from 'typeorm';
 import { OTP } from '../entities';
 import { OTPDto } from '../common/dtos';
 import { randomBytes } from 'crypto';
 import { UserService } from '../user/user.service';
+import { MailService } from '../email/email.service';
 import { OtpStatus, OTPDuration } from 'src/common/enums';
 
 @Injectable()
@@ -13,6 +14,7 @@ export class OtpService {
     @InjectRepository(OTP)
     private readonly otpRepository: Repository<OTP>,
     private readonly userService: UserService,
+    private readonly emailService: MailService,
   ) {}
 
   /**
@@ -76,13 +78,10 @@ export class OtpService {
 
     // Generate a new 6-digit OTP
     const otpCode = randomBytes(3).toString('hex');
-    const otp = this.otpRepository.create({
+    return this.otpRepository.save({
       code: otpCode,
       email: user.email,
     });
-
-    // Save the OTP to the database
-    return this.otpRepository.save(otp);
   }
 
   /**
@@ -170,7 +169,7 @@ export class OtpService {
     const otp = await this.otpRepository.findOne({
       where: {
         email: user.email,
-        status: OtpStatus.IDLE,
+        status: In([OtpStatus.IDLE, OtpStatus.USED]),
       },
     });
 
@@ -178,6 +177,26 @@ export class OtpService {
       throw new HttpException('OTP not found', HttpStatus.NOT_FOUND);
     }
 
-    return this.generateOtp(user.email);
+    const newOtp = await this.generateOtp(user.email);
+
+    await this.sendEmail(
+      user.email,
+      'New OTP',
+      `Here is the OTP again. Your OTP is ${newOtp.code}`,
+    );
+
+    return newOtp;
+  }
+
+  /**
+   * Sends an email to the user with the given email address.
+   * @param email The email address of the user to send the email to.
+   * @param subject The subject of the email.
+   * @param content The content of the email.
+   * @returns A promise that resolves when the email has been sent.
+   * @throws {Error} If the email could not be sent.
+   */
+  async sendEmail(email: string, subject: string, content: string) {
+    await this.emailService.sendEmail(email, subject, content);
   }
 }
