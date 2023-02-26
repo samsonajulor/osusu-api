@@ -31,8 +31,11 @@ export class PlanController {
 
   @Get()
   @UseGuards(AuthGuard)
-  async getAllPlans() {
-    return this.planService.findAll();
+  async getAllPlans(
+    @Query('page') page?: number,
+    @Query('limit') limit?: number,
+  ) {
+    return this.planService.findAll(page, limit);
   }
 
   @Get(':id')
