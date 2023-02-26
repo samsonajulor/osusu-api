@@ -54,6 +54,14 @@ export class AuthController {
     return 'user created please check your mail.';
   }
 
+  /**
+   * Sends an email to the user with the given email address.
+   * @param email The email address of the user to send the email to.
+   * @param subject The subject of the email.
+   * @param content The content of the email.
+   * @returns A promise that resolves when the email has been sent.
+   * @throws {Error} If the email could not be sent.
+   */
   async sendEmail(email: string, subject: string, content: string) {
     await this.emailService.sendEmail(email, subject, content);
   }

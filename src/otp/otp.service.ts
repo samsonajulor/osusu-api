@@ -1,11 +1,11 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { LessThan, Repository } from 'typeorm';
 import { OTP } from '../entities';
 import { OTPDto } from '../common/dtos';
 import { randomBytes } from 'crypto';
 import { UserService } from '../user/user.service';
-import { OtpStatus } from 'src/common/enums';
+import { OtpStatus, OTPDuration } from 'src/common/enums';
 
 @Injectable()
 export class OtpService {
@@ -112,6 +112,7 @@ export class OtpService {
     const otpRecord = await this.otpRepository.findOne({
       where: {
         email,
+        status: OtpStatus.IDLE,
       },
     });
 
@@ -138,5 +139,28 @@ export class OtpService {
     await this.updateOtpStatus(otpRecord.id, OtpStatus.USED);
 
     return true;
+  }
+
+  async expireOtps() {
+    const expiredOtps = await this.findExpiredOtps();
+    expiredOtps.forEach(async (otp) => {
+      otp.status = OtpStatus.EXPIRED;
+      await this.otpRepository.save(otp);
+    });
+  }
+
+  /**
+   * Finds all expired OTPs.
+   * @returns A Promise that resolves to an array of expired OTPs.
+   */
+  async findExpiredOtps(): Promise<OTP[]> {
+    const now = new Date();
+    const expiredOtps = await this.otpRepository.find({
+      where: {
+        createdAt: LessThan(new Date(now.getTime() - OTPDuration.FIVE_MINUTES)),
+        status: OtpStatus.USED || OtpStatus.IDLE,
+      },
+    });
+    return expiredOtps;
   }
 }

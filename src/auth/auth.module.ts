@@ -8,9 +8,14 @@ import { AuthController } from './auth.controller';
 import { User } from 'src/entities/user.entity';
 import { OTP } from 'src/entities/otp.entity';
 import { MailService } from '../email/email.service';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
-  imports: [EmailModule, TypeOrmModule.forFeature([User, OTP])],
+  imports: [
+    ScheduleModule.forRoot(),
+    EmailModule,
+    TypeOrmModule.forFeature([User, OTP]),
+  ],
   providers: [AuthService, OtpService, UserService, MailService],
   controllers: [AuthController],
   exports: [MailService],
