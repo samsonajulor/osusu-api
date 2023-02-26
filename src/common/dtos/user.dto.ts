@@ -61,6 +61,15 @@ export class CreateUserDto {
   readonly email: string;
 }
 
+export class LoginUserDto {
+  @IsEmail()
+  readonly email: string;
+
+  @IsString()
+  @Length(8, 20)
+  readonly password: string;
+}
+
 export class UpdateUserDto {
   @IsOptional()
   @IsString()

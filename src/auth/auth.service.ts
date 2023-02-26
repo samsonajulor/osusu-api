@@ -57,6 +57,13 @@ export class AuthService {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
 
+    if (!user.password) {
+      throw new HttpException(
+        'User does not have a password. Create a new password first.',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
     const isPasswordValid = await this.userService.comparePassword(
       password,
       user.password,

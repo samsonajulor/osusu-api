@@ -18,6 +18,7 @@ import { Serialize, SerializeResponse } from 'src/common/interceptors';
 import { GetCurrentUser } from './decorators';
 import { User } from 'src/entities';
 import { AuthGuard } from 'src/common/guards';
+import { LoginUserDto } from '../common/dtos/user.dto';
 
 @SerializeResponse()
 @Serialize(UserDto)
@@ -50,6 +51,16 @@ export class AuthController {
     );
 
     return 'user created please check your mail.';
+  }
+
+  @Post('/login')
+  async login(@Body() body: LoginUserDto, @Session() session: any) {
+    const { email, password } = body;
+    const user = await this.authService.login(email, password);
+
+    session.userId = user.id;
+
+    return user;
   }
 
   @Post('/create-password')
