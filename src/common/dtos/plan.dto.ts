@@ -9,10 +9,14 @@ import {
 import { Type } from 'class-transformer';
 import { Duration, FrequencyOfSavings, PlanStatus } from '../enums';
 import { User } from '../../entities/user.entity';
+import { Column } from 'typeorm';
 
 export class CreatePlanDto {
   @IsNotEmpty()
   title: string;
+
+  @IsNotEmpty()
+  numberOfBuddies: number;
 
   @IsOptional()
   @IsArray()
@@ -39,10 +43,8 @@ export class CreatePlanDto {
   endDate: Date;
 
   @IsNotEmpty()
-  @IsDateString()
-  duration: string;
+  duration: Duration;
 
-  @IsOptional()
   @IsNotEmpty()
   targetSavingsAmount: number;
 }

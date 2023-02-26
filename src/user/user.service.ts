@@ -89,7 +89,7 @@ export class UserService {
    * @returns A promise that resolves to the newly created user.
    */
   async create(createUserDto: CreateUserDto): Promise<User> {
-    const user = this.userRepository.create(createUserDto);
+    const user = await this.userRepository.create(createUserDto);
 
     return this.userRepository.save(user);
   }
