@@ -106,7 +106,7 @@ export class AuthController {
 
     await this.userService.update(user.id, user);
 
-    return 'password changed';
+    return 'password created successfully';
   }
 
   @Post('/spo')
