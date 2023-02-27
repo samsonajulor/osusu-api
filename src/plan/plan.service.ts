@@ -158,8 +158,16 @@ export class PlanService {
 
     if (notFound.length > 0) {
       throw new HttpException(
-        `User(s) with id(s) ${notFound.join(', ')} not found`,
+        `User(s) with id(s) ${notFound} not found`,
         HttpStatus.NOT_FOUND,
+      );
+    }
+
+    // throw an error if the number of users is greater than 5
+    if (users.length + userIds.length > 5) {
+      throw new HttpException(
+        `Only 5 users can be added to a plan. You are trying to add ${userIds.length} users to a plan with ${users.length} users`,
+        HttpStatus.BAD_REQUEST,
       );
     }
 
@@ -168,6 +176,10 @@ export class PlanService {
       .relation('buddies')
       .of(planId)
       .add(newUsers);
+
+    // update the number of users in the plan
+    plan.numberOfBuddies = users.length + newUsers.length;
+    await this.update(planId, plan);
 
     return `Successfully added ${newUsers.length} new user(s) with id(s) ${newUsers} to plan ${planId}`;
   }

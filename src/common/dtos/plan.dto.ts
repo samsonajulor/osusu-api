@@ -82,6 +82,7 @@ export class UpdatePlanDto {
 
   @IsOptional()
   @IsNotEmpty()
+  @Min(0)
   targetSavingsAmount: number;
 
   @IsOptional()

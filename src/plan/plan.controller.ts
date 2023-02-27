@@ -115,7 +115,7 @@ export class PlanController {
 
     const titleExists = await this.planService.findByTitle(body.title);
 
-    if (titleExists.id !== parseInt(id) && plan.title !== body.title) {
+    if (titleExists && titleExists.id !== parseInt(id)) {
       throw new HttpException(
         'Plan with this title already exists',
         HttpStatus.BAD_REQUEST,
