@@ -122,3 +122,4 @@ This METHOD handles the retrieval of a single plan by its ID.
 1. Number of buddies should be automatically added.
 2. EndDate should be automatically calculated.
 3. Status of a plan should be activated once the startDate is equal to today.
+4. A new entity for the buddyRelationship
