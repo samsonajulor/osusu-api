@@ -57,14 +57,13 @@ export class Plan {
   @Column({ default: true })
   isSubscriptionOpen: boolean;
 
-  @Column({ default: 'active' })
+  @Column({ default: 'inactive' })
   status: PlanStatus;
 
   @Column()
   targetSavingsAmount: number;
 
   @ManyToMany(() => User, (user) => user.plans)
-  @JoinTable()
   buddies: User[];
 
   @AfterInsert()

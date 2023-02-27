@@ -9,7 +9,6 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { Duration, FrequencyOfSavings, PlanStatus } from '../enums';
-import { User } from '../../entities/user.entity';
 
 export class CreatePlanDto {
   @IsNotEmpty()
@@ -40,6 +39,7 @@ export class CreatePlanDto {
   endDate: Date;
 
   @IsNotEmpty()
+  @IsEnum(Duration)
   duration: Duration;
 
   @IsNotEmpty()
@@ -70,7 +70,7 @@ export class UpdatePlanDto {
   startDate: Date;
 
   @IsOptional()
-  @Type(() => Date)
+  @IsDateString()
   endDate: Date;
 
   @IsOptional()

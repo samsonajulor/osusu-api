@@ -37,14 +37,35 @@ export class PlanController {
 
   @Post()
   @UseGuards(AuthGuard)
+  @HttpCode(HttpStatus.CREATED)
   async createPlan(@Body() body: CreatePlanDto, @Session() session: any) {
+    const plan = await this.planService.findByTitle(body.title);
+
+    if (plan) {
+      throw new HttpException(
+        'Plan with this title already exists',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
     const user = await this.userService.findById(session.userId);
-    if (!isStartDateBeforeEndDate)
+    if (
+      !isStartDateBeforeEndDate(
+        new Date(body.startDate),
+        new Date(body.endDate),
+      )
+    )
       throw new HttpException(
         'Start date must be before end date.',
         HttpStatus.BAD_REQUEST,
       );
-    if (!isDatesEqualDuration(body.startDate, body.endDate, body.duration))
+    if (
+      !isDatesEqualDuration(
+        new Date(body.startDate),
+        new Date(body.endDate),
+        body.duration,
+      )
+    )
       throw new HttpException(
         'Duration must match the difference between start date and end date.',
         HttpStatus.BAD_REQUEST,
@@ -60,6 +81,7 @@ export class PlanController {
 
   @Get()
   @UseGuards(AuthGuard)
+  @HttpCode(HttpStatus.OK)
   async getAllPlans(
     @Query('page') page?: number,
     @Query('limit') limit?: number,
@@ -69,30 +91,35 @@ export class PlanController {
 
   @Get(':id')
   @UseGuards(AuthGuard)
+  @HttpCode(HttpStatus.OK)
   async getPlanById(@Param('id') id: number, @Query('title') title: string) {
     return title ? this.planService.findByTitle : this.planService.findById(id);
   }
 
   @Put(':id')
   @UseGuards(AuthGuard)
+  @HttpCode(HttpStatus.OK)
   async updatePlan(@Param('id') id: number, @Body() body: UpdatePlanDto) {
     return this.planService.update(id, body);
   }
 
   @Delete(':id')
   @UseGuards(AuthGuard)
+  @HttpCode(HttpStatus.OK)
   async deletePlan(@Param('id') id: number) {
     return this.planService.delete(id);
   }
 
   @Get('/:id/user')
   @UseGuards(AuthGuard)
+  @HttpCode(HttpStatus.OK)
   async getPlanUsers(@Param('id') id: number) {
     return this.planService.getRelatedUsers(id);
   }
 
   @Post('/:id/user')
   @UseGuards(AuthGuard)
+  @HttpCode(HttpStatus.OK)
   async addUserToPlan(
     @Param('id') id: number,
     @Body() body: addBuddyToPlanDto,
@@ -102,6 +129,7 @@ export class PlanController {
 
   @Delete('/:id/user')
   @UseGuards(AuthGuard)
+  @HttpCode(HttpStatus.OK)
   async removePlanUser(
     @Param('id') id: number,
     @Body('users') userIds: number[],
