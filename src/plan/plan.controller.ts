@@ -21,9 +21,8 @@ import {
   UpdatePlanDto,
   UpdatePlanStatusDto,
 } from 'src/common/dtos';
-import { Serialize, SerializeResponse } from 'src/common/interceptors';
+import { SerializeResponse } from 'src/common/interceptors';
 import { AuthGuard } from 'src/common/guards';
-import { UserDto } from '../common/dtos/user.dto';
 import {
   isDatesEqualDuration,
   isStartDateBeforeEndDate,
@@ -121,7 +120,32 @@ export class PlanController {
         HttpStatus.BAD_REQUEST,
       );
     }
+
     // must update the start date, end date and duration together
+    if (
+      (body.startDate && !body.endDate && !body.duration) ||
+      (!body.startDate && body.endDate && !body.duration) ||
+      (!body.startDate && !body.endDate && body.duration)
+    )
+      throw new HttpException(
+        'Start date, end date and duration must be updated together.',
+        HttpStatus.BAD_REQUEST,
+      );
+
+    if (
+      body.startDate &&
+      body.endDate &&
+      body.duration &&
+      !isDatesEqualDuration(
+        new Date(body.startDate),
+        new Date(body.endDate),
+        body.duration,
+      )
+    )
+      throw new HttpException(
+        'Duration must match the difference between start date and end date.',
+        HttpStatus.BAD_REQUEST,
+      );
     return this.planService.update(parseInt(id), body);
   }
 

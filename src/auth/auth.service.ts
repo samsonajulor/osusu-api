@@ -54,7 +54,6 @@ export class AuthService {
    */
   async login(email: string, password: string): Promise<UserDto> {
     const user = await this.userService.findByEmail(email);
-    console.log(user, '<<<<user>>>>');
 
     if (!user) {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);

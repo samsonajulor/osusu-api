@@ -29,7 +29,7 @@ export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly userService: UserService,
-    private readonly OtpService: OtpService,
+    private readonly otpService: OtpService,
   ) {}
 
   @Post('/register')
@@ -76,7 +76,7 @@ export class AuthController {
   async createPassword(@Body() body: CreatePasswordDto) {
     const { email, password, confirmPassword, otp } = body;
 
-    const isValidUser = await this.OtpService.verifyOtp(email, otp);
+    const isValidUser = await this.otpService.verifyOtp(email, otp);
 
     if (!isValidUser) {
       throw new HttpException('Invalid OTP', HttpStatus.BAD_REQUEST);
