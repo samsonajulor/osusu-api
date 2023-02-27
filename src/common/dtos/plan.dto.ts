@@ -37,8 +37,8 @@ export class CreatePlanDto {
   @IsDateString()
   startDate: Date;
 
-  @IsOptional()
-  @Type(() => Date)
+  @IsNotEmpty()
+  @IsDateString()
   endDate: Date;
 
   @IsNotEmpty()
@@ -53,8 +53,7 @@ export class UpdatePlanDto {
   title: string;
 
   @IsOptional()
-  @IsArray()
-  buddies: number[];
+  numberOfBuddies: number;
 
   @IsOptional()
   @IsBoolean()
@@ -87,4 +86,8 @@ export class UpdatePlanDto {
   @IsOptional()
   @IsEnum(PlanStatus)
   status: PlanStatus;
+
+  @IsOptional()
+  @IsBoolean()
+  isSubscriptionOpen: boolean;
 }
