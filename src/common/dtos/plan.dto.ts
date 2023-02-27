@@ -91,3 +91,9 @@ export class UpdatePlanDto {
   @IsBoolean()
   isSubscriptionOpen: boolean;
 }
+
+export class addBuddyToPlanDto {
+  @IsNotEmpty()
+  @IsArray()
+  buddies: number[];
+}
