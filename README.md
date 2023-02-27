@@ -1,6 +1,6 @@
 # OSUSU Application Documentation
 
-- [walk through](https://drive.google.com/file/d/1nDzfx7bvfm7yJxdFNKBJofk6w7I1iYwH/view?usp=sharing)
+- [VIDEO WALK THROUGH](https://drive.google.com/file/d/1nDzfx7bvfm7yJxdFNKBJofk6w7I1iYwH/view?usp=sharing)
 - [DOCUMENTATION](https://documenter.getpostman.com/view/18357475/2s93CRKWsU#a9dc2324-bedc-43a9-80d1-56a979326802)
 
 ## How to start the APP
