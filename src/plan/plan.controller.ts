@@ -14,6 +14,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { PlanService } from './plan.service';
+import { UserService } from '../user/user.service';
 import {
   addBuddyToPlanDto,
   CreatePlanDto,
@@ -21,18 +22,40 @@ import {
 } from 'src/common/dtos';
 import { SerializeResponse } from 'src/common/interceptors';
 import { AuthGuard } from 'src/common/guards';
+import {
+  isDatesEqualDuration,
+  isStartDateBeforeEndDate,
+} from 'src/common/utilities';
 
 @Controller('plan')
 @SerializeResponse()
 export class PlanController {
-  constructor(private readonly planService: PlanService) {}
+  constructor(
+    private readonly planService: PlanService,
+    private userService: UserService,
+  ) {}
 
   @Post()
   @UseGuards(AuthGuard)
-  async createPlan(@Body() body: CreatePlanDto) {
-    // throw an error if endDate - startDate !== Duration
+  async createPlan(@Body() body: CreatePlanDto, @Session() session: any) {
+    const user = await this.userService.findById(session.userId);
+    if (!isStartDateBeforeEndDate)
+      throw new HttpException(
+        'Start date must be before end date.',
+        HttpStatus.BAD_REQUEST,
+      );
+    if (!isDatesEqualDuration(body.startDate, body.endDate, body.duration))
+      throw new HttpException(
+        'Duration must match the difference between start date and end date.',
+        HttpStatus.BAD_REQUEST,
+      );
 
-    return this.planService.create(body);
+    const data = {
+      ...body,
+      creator: user.email,
+    };
+
+    return this.planService.create(data);
   }
 
   @Get()

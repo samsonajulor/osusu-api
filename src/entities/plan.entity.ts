@@ -54,10 +54,10 @@ export class Plan {
   })
   duration: Duration;
 
-  @Column()
+  @Column({ default: true })
   isSubscriptionOpen: boolean;
 
-  @Column()
+  @Column({ default: 'active' })
   status: PlanStatus;
 
   @Column()

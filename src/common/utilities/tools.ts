@@ -1,18 +1,19 @@
 export function isDatesEqualDuration(
   startDate: Date,
   endDate: Date,
-  duration: Date,
+  durationInMonths: number,
 ): boolean {
-  const diffInMs: number = endDate.getTime() - startDate.getTime();
-  const diffDuration: Date = new Date(diffInMs);
+  const diffMonths: number =
+    (endDate.getFullYear() - startDate.getFullYear()) * 12 +
+    (endDate.getMonth() - startDate.getMonth());
+  if (diffMonths !== durationInMonths) return false;
 
-  if (
-    diffDuration.getUTCDate() - 1 !== duration.getUTCDate() ||
-    diffDuration.getUTCHours() !== duration.getUTCHours() ||
-    diffDuration.getUTCMinutes() !== duration.getUTCMinutes() ||
-    diffDuration.getUTCSeconds() !== duration.getUTCSeconds()
-  ) {
-    return false;
-  }
   return true;
+}
+
+export function isStartDateBeforeEndDate(
+  startDate: Date,
+  endDate: Date,
+): boolean {
+  return startDate.getTime() <= endDate.getTime();
 }

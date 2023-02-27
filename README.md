@@ -103,3 +103,8 @@ This METHOD handles the retrieval of a single plan by its ID.
 **GetSubscribed Plans METHOD:** This METHOD handles the retrieval of all plans subscribed to by a user.
 
 **Unsubscribe From Plan METHOD:** This service handles the unsubscription of a user from a plan.
+
+
+## Suggested Updates
+1. Number of buddies should be automatically added
+2. EndDate should be automatically calculated
