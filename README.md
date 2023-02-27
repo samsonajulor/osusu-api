@@ -1,5 +1,14 @@
 # OSUSU Application Documentation
 
+## How to start the APP
+- delete any existing migrations file
+- ensure that postgres is up and running
+- this version is created to run locally so create a database called appcake
+- create a .env file at the root of the repository.
+- copy and update the configs from .env.sample
+- run `yarn migration:generate`
+- run `yarn migration:generate`
+- run `yarn start:dev`
 ## Overview
 
 This is a NestJS application with TypeScript, Yarn, Postgres, and TypeORM. The application has three main entities: User, OTP, and Plan. The application provides services for authentication, user management, and plan management.
