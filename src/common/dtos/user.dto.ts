@@ -130,6 +130,10 @@ export class CreatePasswordDto {
   @IsString()
   @Length(8, 20)
   readonly confirmPassword: string;
+
+  @IsString()
+  @Length(6, 6)
+  readonly otp: string;
 }
 
 export class ResetPasswordDto {

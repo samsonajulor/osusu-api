@@ -19,9 +19,11 @@ import {
   addBuddyToPlanDto,
   CreatePlanDto,
   UpdatePlanDto,
+  UpdatePlanStatusDto,
 } from 'src/common/dtos';
-import { SerializeResponse } from 'src/common/interceptors';
+import { Serialize, SerializeResponse } from 'src/common/interceptors';
 import { AuthGuard } from 'src/common/guards';
+import { UserDto } from '../common/dtos/user.dto';
 import {
   isDatesEqualDuration,
   isStartDateBeforeEndDate,
@@ -76,7 +78,12 @@ export class PlanController {
       creator: user.email,
     };
 
-    return this.planService.create(data);
+    const newPlan = await this.planService.create(data);
+
+    // add the creator to the plan
+    await this.planService.addUsersToPlan(newPlan.id, [user.id]);
+
+    return newPlan;
   }
 
   @Get()
@@ -99,8 +106,23 @@ export class PlanController {
   @Put(':id')
   @UseGuards(AuthGuard)
   @HttpCode(HttpStatus.OK)
-  async updatePlan(@Param('id') id: number, @Body() body: UpdatePlanDto) {
-    return this.planService.update(id, body);
+  async updatePlan(@Param('id') id: string, @Body() body: UpdatePlanDto) {
+    const plan = await this.planService.findById(parseInt(id));
+
+    if (!plan) {
+      throw new HttpException('Plan not found', HttpStatus.NOT_FOUND);
+    }
+
+    const titleExists = await this.planService.findByTitle(body.title);
+
+    if (titleExists.id !== parseInt(id) && plan.title !== body.title) {
+      throw new HttpException(
+        'Plan with this title already exists',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    // must update the start date, end date and duration together
+    return this.planService.update(parseInt(id), body);
   }
 
   @Delete(':id')
@@ -131,9 +153,19 @@ export class PlanController {
   @UseGuards(AuthGuard)
   @HttpCode(HttpStatus.OK)
   async removePlanUser(
-    @Param('id') id: number,
-    @Body('users') userIds: number[],
+    @Param('id') id: string,
+    @Body() body: addBuddyToPlanDto,
   ) {
-    return this.planService.removeUsersFromPlan(id, userIds);
+    return this.planService.removeUsersFromPlan(parseInt(id), body.buddies);
+  }
+
+  @Put('/:id/status')
+  @UseGuards(AuthGuard)
+  @HttpCode(HttpStatus.OK)
+  async updatePlanStatus(
+    @Param('id') id: number,
+    @Body() body: UpdatePlanStatusDto,
+  ) {
+    return this.planService.updatePlanStatus(id, body.status);
   }
 }

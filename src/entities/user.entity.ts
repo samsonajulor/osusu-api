@@ -41,6 +41,9 @@ export class User {
   @Column({ unique: true, nullable: true })
   accountNumber: string;
 
+  @Column({ default: false })
+  isVerified: boolean;
+
   @ManyToMany(() => Plan, (plan) => plan.buddies, {
     cascade: true,
     eager: true,

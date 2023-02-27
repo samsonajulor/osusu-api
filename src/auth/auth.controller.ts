@@ -16,6 +16,7 @@ import { Serialize, SerializeResponse } from 'src/common/interceptors';
 import { GetCurrentUser } from './decorators';
 import { User } from 'src/entities';
 import { AuthGuard } from 'src/common/guards';
+import { OtpService } from '../otp/otp.service';
 import {
   ChangePasswordDto,
   LoginUserDto,
@@ -28,6 +29,7 @@ export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly userService: UserService,
+    private readonly OtpService: OtpService,
   ) {}
 
   @Post('/register')
@@ -72,7 +74,13 @@ export class AuthController {
 
   @Post('/create-password')
   async createPassword(@Body() body: CreatePasswordDto) {
-    const { email, password, confirmPassword } = body;
+    const { email, password, confirmPassword, otp } = body;
+
+    const isValidUser = await this.OtpService.verifyOtp(email, otp);
+
+    if (!isValidUser) {
+      throw new HttpException('Invalid OTP', HttpStatus.BAD_REQUEST);
+    }
 
     const user = await this.userService.findByEmail(email);
 
@@ -94,6 +102,7 @@ export class AuthController {
     const hashedPW = await this.userService.hashPassword(password);
 
     user.password = hashedPW;
+    user.isVerified = true;
 
     await this.userService.update(user.id, user);
 

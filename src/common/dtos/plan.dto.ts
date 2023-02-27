@@ -6,6 +6,7 @@ import {
   IsOptional,
   IsArray,
   Max,
+  Min,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { Duration, FrequencyOfSavings, PlanStatus } from '../enums';
@@ -15,6 +16,7 @@ export class CreatePlanDto {
   title: string;
 
   @IsNotEmpty()
+  @Min(0)
   @Max(5)
   numberOfBuddies: number;
 
@@ -43,6 +45,7 @@ export class CreatePlanDto {
   duration: Duration;
 
   @IsNotEmpty()
+  @Min(0)
   targetSavingsAmount: number;
 }
 
@@ -82,10 +85,6 @@ export class UpdatePlanDto {
   targetSavingsAmount: number;
 
   @IsOptional()
-  @IsEnum(PlanStatus)
-  status: PlanStatus;
-
-  @IsOptional()
   @IsBoolean()
   isSubscriptionOpen: boolean;
 }
@@ -94,4 +93,10 @@ export class addBuddyToPlanDto {
   @IsNotEmpty()
   @IsArray()
   buddies: number[];
+}
+
+export class UpdatePlanStatusDto {
+  @IsNotEmpty()
+  @IsEnum(PlanStatus)
+  status: PlanStatus;
 }

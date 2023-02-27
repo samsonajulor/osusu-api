@@ -5,6 +5,7 @@ import { Plan } from '../entities/plan.entity';
 import { CreatePlanDto } from '../common/dtos/plan.dto';
 import { User } from 'src/entities';
 import { UserService } from 'src/user/user.service';
+import { PlanStatus } from 'src/common/enums';
 
 @Injectable()
 export class PlanService {
@@ -74,7 +75,7 @@ export class PlanService {
   }
 
   /**
-   * Updates a Plan
+   * Updates a Plan. does not update the plan status
    * @param plan - The Plan object to update
    * @returns The updated Plan object
    * @memberof PlanService
@@ -86,7 +87,9 @@ export class PlanService {
       throw new HttpException('Plan not found', HttpStatus.NOT_FOUND);
     }
 
-    return this.planRepository.save(updateUserDto);
+    Object.assign(plan, updateUserDto);
+
+    return this.planRepository.save(plan);
   }
 
   /**
@@ -155,7 +158,7 @@ export class PlanService {
 
     if (notFound.length > 0) {
       throw new HttpException(
-        `Users with ids ${notFound.join(', ')} not found`,
+        `User(s) with id(s) ${notFound.join(', ')} not found`,
         HttpStatus.NOT_FOUND,
       );
     }
@@ -166,7 +169,7 @@ export class PlanService {
       .of(planId)
       .add(newUsers);
 
-    return `Successfully added ${newUsers.length} new users with id(s) ${newUsers} to plan ${planId}`;
+    return `Successfully added ${newUsers.length} new user(s) with id(s) ${newUsers} to plan ${planId}`;
   }
 
   /**
@@ -191,9 +194,7 @@ export class PlanService {
 
       if (!user) {
         notFound.push(userId);
-      }
-      /** Check if the user is the creator */
-      if (user.email === plan.creator) {
+      } else if (user.email === plan.creator) {
         throw new HttpException(
           `User with id ${user.id} is the creator of plan ${planId}`,
           HttpStatus.BAD_REQUEST,
@@ -209,5 +210,23 @@ export class PlanService {
     }
 
     return `users with id ${userIds} removed from plan ${planId}`;
+  }
+
+  /**
+   * updates a plans status
+   * @param planId - The id of the Plan to update
+   * @param status - The new status of the plan
+   * @returns The updated Plan object
+   * @memberof PlanService
+   */
+  async updatePlanStatus(planId: number, status: PlanStatus): Promise<Plan> {
+    const plan = await this.findById(planId);
+
+    if (!plan) {
+      throw new HttpException('Plan not found', HttpStatus.NOT_FOUND);
+    }
+
+    plan.status = status;
+    return this.planRepository.save(plan);
   }
 }
