@@ -14,7 +14,11 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { PlanService } from './plan.service';
-import { CreatePlanDto } from 'src/common/dtos';
+import {
+  addBuddyToPlanDto,
+  CreatePlanDto,
+  UpdatePlanDto,
+} from 'src/common/dtos';
 import { SerializeResponse } from 'src/common/interceptors';
 import { AuthGuard } from 'src/common/guards';
 
@@ -26,6 +30,8 @@ export class PlanController {
   @Post()
   @UseGuards(AuthGuard)
   async createPlan(@Body() body: CreatePlanDto) {
+    // throw an error if endDate - startDate !== Duration
+
     return this.planService.create(body);
   }
 
@@ -46,7 +52,7 @@ export class PlanController {
 
   @Put(':id')
   @UseGuards(AuthGuard)
-  async updatePlan(@Param('id') id: number, @Body() body: CreatePlanDto) {
+  async updatePlan(@Param('id') id: number, @Body() body: UpdatePlanDto) {
     return this.planService.update(id, body);
   }
 
@@ -64,8 +70,11 @@ export class PlanController {
 
   @Post('/:id/user')
   @UseGuards(AuthGuard)
-  async addPlanUser(@Param('id') id: number, @Body('users') userIds: number[]) {
-    return this.planService.addUsersToPlan(id, userIds);
+  async addUserToPlan(
+    @Param('id') id: number,
+    @Body() body: addBuddyToPlanDto,
+  ) {
+    return this.planService.addUsersToPlan(id, body.buddies);
   }
 
   @Delete('/:id/user')

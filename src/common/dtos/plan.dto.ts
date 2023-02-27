@@ -17,10 +17,6 @@ export class CreatePlanDto {
   @IsNotEmpty()
   numberOfBuddies: number;
 
-  @IsOptional()
-  @IsArray()
-  buddies: User[];
-
   @IsNotEmpty()
   @IsBoolean()
   hasTarget: boolean;
@@ -46,6 +42,10 @@ export class CreatePlanDto {
 
   @IsNotEmpty()
   targetSavingsAmount: number;
+
+  @IsOptional()
+  @IsArray()
+  buddies: User[];
 }
 
 export class UpdatePlanDto {
@@ -69,7 +69,7 @@ export class UpdatePlanDto {
 
   @IsOptional()
   @IsDateString()
-  startDate: string;
+  startDate: Date;
 
   @IsOptional()
   @Type(() => Date)
